@@ -83,9 +83,11 @@ function refresh_table() {
 const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=10&date=2024-01-04'
 
 function call_api() {
+    const api_key = document.getElementById('api_key_text').value
+
     fetch(api_url, {
         headers: {
-            'x-nxopen-api-key': API_KEY
+            'x-nxopen-api-key': api_key
         }
     })
         .then(response => response.json())
