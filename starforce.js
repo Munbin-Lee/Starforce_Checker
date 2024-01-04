@@ -36,6 +36,7 @@ function refresh_table() {
     starforce_tbody.innerHTML = ''
 
     const show_zero_row = document.getElementById('show_zero_row').checked
+    const show_only_prob = document.getElementById('show_only_prob').checked
 
     let innerHTML = ''
 
@@ -43,17 +44,33 @@ function refresh_table() {
         if (!show_zero_row && starforce.count == 0) return
 
         innerHTML += '<tr align="center">'
+
         innerHTML += '<td>' + starforce.star + ' -> ' + (starforce.star + 1) + '</td>';
         innerHTML += '<td>' + starforce.count + '</td>'
 
-        innerHTML += '<td>' + starforce.success_rate.toFixed(2) + '% , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회' + '</td>'
-        innerHTML += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.success_observed + '회' + '</td>'
+        innerHTML += '<td>' + starforce.success_rate.toFixed(2) + '%'
+        if (!show_only_prob) innerHTML += ' , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회'
+        innerHTML += '</td>'
 
-        innerHTML += '<td>' + starforce.fail_rate.toFixed(2) + '% , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회' + '</td>'
-        innerHTML += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.fail_observed + '회' + '</td>'
+        innerHTML += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '%'
+        if (!show_only_prob) innerHTML += ' , ' + starforce.success_observed + '회'
+        innerHTML += '</td>'
 
-        innerHTML += '<td>' + starforce.destory_rate.toFixed(2) + '% , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회' + '</td>'
-        innerHTML += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.destory_observed + '회' + '</td>'
+        innerHTML += '<td>' + starforce.fail_rate.toFixed(2) + '%'
+        if (!show_only_prob) innerHTML += ' , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회'
+        innerHTML += '</td>'
+
+        innerHTML += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '%'
+        if (!show_only_prob) innerHTML += ' , ' + starforce.fail_observed + '회'
+        innerHTML += '</td>'
+
+        innerHTML += '<td>' + starforce.destory_rate.toFixed(2) + '%'
+        if (!show_only_prob) innerHTML += ' , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회'
+        innerHTML += '</td>'
+
+        innerHTML += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '%'
+        if (!show_only_prob) innerHTML += ' , ' + starforce.destory_observed + '회'
+        innerHTML += '</td>'
 
         innerHTML += '</tr>'
 

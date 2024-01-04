@@ -11,12 +11,12 @@
     <input type="button" value="스타포스 기록 가져오기" onclick="call_api()" />
     <br />
     <br />
-    <input id="show_zero_row" type="checkbox" />강화 횟수가 0인 행 표시
+    <input id="show_zero_row" type="checkbox" onclick="refresh_table()" />강화 횟수가 0인 행 표시
     <br />
-    <input type="checkbox" />확률만 표시
+    <input id="show_only_prob" type="checkbox" onclick="refresh_table()" />확률만 표시
     <br />
     <br />
-    <table width="80%" border="1">
+    <table width="90%" border="1">
         <thead align="center">
             <tr>
                 <td>강화 수치</td>
