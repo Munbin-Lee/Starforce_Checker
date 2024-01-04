@@ -34,50 +34,58 @@ for (const x of Array(25).keys()) {
     starforces.push(new Starforce(x));
 }
 
-const api_url = "https://open.api.nexon.com/maplestory/v1/history/starforce?count=10&date=2024-01-04"
+const starforce_tbody = document.getElementById('starforce_tbody')
 
-const starforce_tbody = document.getElementById("starforce_tbody")
+function refresh_table() {
+    starforce_tbody.innerHTML = '';
 
-fetch(api_url, {
-    headers: {
-        "x-nxopen-api-key": API_KEY
-    }
-})
-    .then(response => response.json())
-    .then(data => {
-        for (const history of Object.values(data.starforce_history)) {
-            star = history.before_starforce_count
-            starforces[star].count += 1
+    starforces.slice().reverse().forEach((starforce) => {
+        let row = '<tr align="center">'
+        row += '<td>' + starforce.star + ' -> ' + (starforce.star + 1) + '</td>';
+        row += '<td>' + starforce.count + '</td>'
 
-            if (history.item_upgrade_result == "성공") {
-                starforces[star].success_observed += 1
-            } else if (history.item_upgrade_result == "실패(유지)" ||
-                history.item_upgrade_result == "실패(하락)") {
-                starforces[star].fail_observed += 1
-            } else {
-                starforces[star].destory_observed += 1
+        row += '<td>' + starforce.success_rate.toFixed(2) + '% , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회' + '</td>'
+        row += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.success_observed + '회' + '</td>'
+
+        row += '<td>' + starforce.fail_rate.toFixed(2) + '% , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회' + '</td>'
+        row += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.fail_observed + '회' + '</td>'
+
+        row += '<td>' + starforce.destory_rate.toFixed(2) + '% , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회' + '</td>'
+        row += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.destory_observed + '회' + '</td>'
+
+        row += '</tr>'
+
+        starforce_tbody.insertAdjacentHTML('afterend', row)
+    })
+}
+
+const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=10&date=2024-01-04'
+
+function call_api() {
+    fetch(api_url, {
+        headers: {
+            'x-nxopen-api-key': API_KEY
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            for (const history of Object.values(data.starforce_history)) {
+                star = history.before_starforce_count
+                starforces[star].count += 1
+
+                if (history.item_upgrade_result == '성공') {
+                    starforces[star].success_observed += 1
+                } else if (history.item_upgrade_result == '실패(유지)' ||
+                    history.item_upgrade_result == '실패(하락)') {
+                    starforces[star].fail_observed += 1
+                } else {
+                    starforces[star].destory_observed += 1
+                }
+
+                console.log(history);
             }
 
-            console.log(history);
-        }
-
-        starforces.slice().reverse().forEach((starforce) => {
-            let row = "<tr align='center'>"
-            row += "<td>" + starforce.star + " -> " + (starforce.star + 1) + "</td>";
-            row += "<td>" + starforce.count + "</td>"
-
-            row += "<td>" + starforce.success_rate.toFixed(2) + "% , " + (starforce.count * starforce.success_rate / 100).toFixed(2) + "회" + "</td>"
-            row += "<td>" + (starforce.success_observed / starforce.count * 100).toFixed(2) + "% , " + starforce.success_observed + "회" + "</td>"
-
-            row += "<td>" + starforce.fail_rate.toFixed(2) + "% , " + (starforce.count * starforce.fail_rate / 100).toFixed(2) + "회" + "</td>"
-            row += "<td>" + (starforce.fail_observed / starforce.count * 100).toFixed(2) + "% , " + starforce.fail_observed + "회" + "</td>"
-
-            row += "<td>" + starforce.destory_rate.toFixed(2) + "% , " + (starforce.count * starforce.destory_rate / 100).toFixed(2) + "회" + "</td>"
-            row += "<td>" + (starforce.destory_observed / starforce.count * 100).toFixed(2) + "% , " + starforce.destory_observed + "회" + "</td>"
-
-            row += "</tr>"
-
-            starforce_tbody.insertAdjacentHTML('afterend', row)
+            refresh_table()
         })
-    })
-    .catch(error => console.error(error))
+        .catch(error => console.error(error))
+}
