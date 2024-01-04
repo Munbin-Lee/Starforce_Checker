@@ -39,7 +39,11 @@ const starforce_tbody = document.getElementById('starforce_tbody')
 function refresh_table() {
     starforce_tbody.innerHTML = '';
 
+    const show_zero_row = document.getElementById('show_zero_row').checked
+
     starforces.slice().reverse().forEach((starforce) => {
+        if (!show_zero_row && starforce.count == 0) return
+
         let row = '<tr align="center">'
         row += '<td>' + starforce.star + ' -> ' + (starforce.star + 1) + '</td>';
         row += '<td>' + starforce.count + '</td>'
