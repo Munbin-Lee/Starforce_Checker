@@ -28,39 +28,39 @@ class Starforce {
     }
 }
 
-const starforces = []
-
-for (const x of Array(25).keys()) {
-    starforces.push(new Starforce(x));
-}
+let starforces = []
 
 const starforce_tbody = document.getElementById('starforce_tbody')
 
 function refresh_table() {
-    starforce_tbody.innerHTML = '';
+    starforce_tbody.innerHTML = ''
 
     const show_zero_row = document.getElementById('show_zero_row').checked
 
-    starforces.slice().reverse().forEach((starforce) => {
+    let innerHTML = ''
+
+    starforces.forEach((starforce) => {
         if (!show_zero_row && starforce.count == 0) return
 
-        let row = '<tr align="center">'
-        row += '<td>' + starforce.star + ' -> ' + (starforce.star + 1) + '</td>';
-        row += '<td>' + starforce.count + '</td>'
+        innerHTML += '<tr align="center">'
+        innerHTML += '<td>' + starforce.star + ' -> ' + (starforce.star + 1) + '</td>';
+        innerHTML += '<td>' + starforce.count + '</td>'
 
-        row += '<td>' + starforce.success_rate.toFixed(2) + '% , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회' + '</td>'
-        row += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.success_observed + '회' + '</td>'
+        innerHTML += '<td>' + starforce.success_rate.toFixed(2) + '% , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회' + '</td>'
+        innerHTML += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.success_observed + '회' + '</td>'
 
-        row += '<td>' + starforce.fail_rate.toFixed(2) + '% , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회' + '</td>'
-        row += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.fail_observed + '회' + '</td>'
+        innerHTML += '<td>' + starforce.fail_rate.toFixed(2) + '% , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회' + '</td>'
+        innerHTML += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.fail_observed + '회' + '</td>'
 
-        row += '<td>' + starforce.destory_rate.toFixed(2) + '% , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회' + '</td>'
-        row += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.destory_observed + '회' + '</td>'
+        innerHTML += '<td>' + starforce.destory_rate.toFixed(2) + '% , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회' + '</td>'
+        innerHTML += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '% , ' + starforce.destory_observed + '회' + '</td>'
 
-        row += '</tr>'
+        innerHTML += '</tr>'
 
-        starforce_tbody.insertAdjacentHTML('afterend', row)
+
     })
+
+    starforce_tbody.insertAdjacentHTML('afterbegin', innerHTML)
 }
 
 const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=10&date=2024-01-04'
@@ -73,6 +73,12 @@ function call_api() {
     })
         .then(response => response.json())
         .then(data => {
+            starforces = []
+
+            for (const x of Array(25).keys()) {
+                starforces.push(new Starforce(x));
+            }
+
             for (const history of Object.values(data.starforce_history)) {
                 star = history.before_starforce_count
                 starforces[star].count += 1
