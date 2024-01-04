@@ -1,11 +1,11 @@
-function get_success_rate(star) {
+function getSuccessRate(star) {
     if (star <= 2) return 95 - 5 * star
     if (star <= 14) return 100 - 5 * star
     if (star <= 21) return 30
     return 25 - star
 }
 
-function get_destroy_rate(star) {
+function getDestroyRate(star) {
     if (star <= 14) return 0
     if (star <= 17) return 2.1
     if (star <= 19) return 2.8
@@ -19,29 +19,29 @@ class Starforce {
     constructor(star) {
         this.star = star
         this.count = 0
-        this.success_rate = get_success_rate(star)
+        this.success_rate = getSuccessRate(star)
         this.success_observed = 0
-        this.destory_rate = get_destroy_rate(star)
+        this.destory_rate = getDestroyRate(star)
         this.destory_observed = 0
-        this.fail_rate = 100 - get_success_rate(star) - get_destroy_rate(star)
+        this.fail_rate = 100 - getSuccessRate(star) - getDestroyRate(star)
         this.fail_observed = 0
     }
 }
 
 let starforces = []
 
-const starforce_tbody = document.getElementById('starforce_tbody')
+const starforceTbody = document.getElementById('starforce_tbody')
 
-function refresh_table() {
-    starforce_tbody.innerHTML = ''
+function refreshTable() {
+    starforceTbody.innerHTML = ''
 
-    const hide_empty_row = document.getElementById('hide_empty_row').checked
-    const only_show_prob = document.getElementById('only_show_prob').checked
+    const hideEmptyRow = document.getElementById('hide_empty_row').checked
+    const onlyShowProb = document.getElementById('only_show_prob').checked
 
     let innerHTML = ''
 
     starforces.forEach((starforce) => {
-        if (hide_empty_row && starforce.count == 0) return
+        if (hideEmptyRow && starforce.count == 0) return
 
         innerHTML += '<tr align="center">'
 
@@ -49,27 +49,27 @@ function refresh_table() {
         innerHTML += '<td>' + starforce.count + '</td>'
 
         innerHTML += '<td>' + starforce.success_rate.toFixed(2) + '%'
-        if (!only_show_prob) innerHTML += ' , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회'
+        if (!onlyShowProb) innerHTML += ' , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회'
         innerHTML += '</td>'
 
         innerHTML += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '%'
-        if (!only_show_prob) innerHTML += ' , ' + starforce.success_observed + '회'
+        if (!onlyShowProb) innerHTML += ' , ' + starforce.success_observed + '회'
         innerHTML += '</td>'
 
         innerHTML += '<td>' + starforce.fail_rate.toFixed(2) + '%'
-        if (!only_show_prob) innerHTML += ' , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회'
+        if (!onlyShowProb) innerHTML += ' , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회'
         innerHTML += '</td>'
 
         innerHTML += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '%'
-        if (!only_show_prob) innerHTML += ' , ' + starforce.fail_observed + '회'
+        if (!onlyShowProb) innerHTML += ' , ' + starforce.fail_observed + '회'
         innerHTML += '</td>'
 
         innerHTML += '<td>' + starforce.destory_rate.toFixed(2) + '%'
-        if (!only_show_prob) innerHTML += ' , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회'
+        if (!onlyShowProb) innerHTML += ' , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회'
         innerHTML += '</td>'
 
         innerHTML += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '%'
-        if (!only_show_prob) innerHTML += ' , ' + starforce.destory_observed + '회'
+        if (!onlyShowProb) innerHTML += ' , ' + starforce.destory_observed + '회'
         innerHTML += '</td>'
 
         innerHTML += '</tr>'
@@ -77,17 +77,17 @@ function refresh_table() {
 
     })
 
-    starforce_tbody.insertAdjacentHTML('afterbegin', innerHTML)
+    starforceTbody.insertAdjacentHTML('afterbegin', innerHTML)
 }
 
-const api_url_base = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date='
+const apiUrlBase = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date='
 
-async function call_api(api_key, date) {
-    const api_url = api_url_base + date
+async function getStarforceData(apiKey, date) {
+    const apiUrl = apiUrlBase + date
 
-    fetch(api_url, {
+    fetch(apiUrl, {
         headers: {
-            'x-nxopen-api-key': api_key
+            'x-nxopen-api-key': apiKey
         }
     })
         .then(response => response.json())
@@ -106,7 +106,7 @@ async function call_api(api_key, date) {
                 }
             }
         })
-        .then(() => refresh_table())
+        .then(() => refreshTable())
         .catch(error => {
             console.log(error)
         })
@@ -116,14 +116,12 @@ function sleep(ms) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
-const date_from = new Date("2023-12-27T09:00:00")
-const date_to = new Date()
-date_to.setHours(date_to.getHours() + 9)
+const dateFrom = new Date("2023-12-27T09:00:00")
+const dateTo = new Date()
+dateTo.setHours(dateTo.getHours() + 9)
 
-async function call_api_all() {
-    const api_key = document.getElementById('api_key_text').value
-
-    const date = date_from
+async function getAllStarforceData() {
+    const apiKey = document.getElementById('api_key_text').value
 
     starforces = []
 
@@ -131,15 +129,11 @@ async function call_api_all() {
         starforces.push(new Starforce(x));
     }
 
-    while (date <= date_to) {
-        const param_date = date.toISOString().slice(0, 10)
+    for (const date = dateFrom; date <= dateTo; date.setDate(date.getDate() + 1)) {
+        const paramDate = date.toISOString().slice(0, 10)
 
-        console.log(param_date)
+        getStarforceData(apiKey, paramDate)
 
         await sleep(250)
-
-        call_api(api_key, param_date)
-
-        date.setDate(date.getDate() + 1)
     }
 }
