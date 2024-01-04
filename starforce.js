@@ -81,7 +81,7 @@ function refresh_table() {
 }
 
 const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date=' +
-    new Date().toISOString().slice(0, 10)
+    new Date(new Date().getTime() + 1000 * 60 * 60 * 9).toISOString().slice(0, 10)
 
 function call_api() {
     const api_key = document.getElementById('api_key_text').value
