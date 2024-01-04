@@ -35,13 +35,13 @@ const starforce_tbody = document.getElementById('starforce_tbody')
 function refresh_table() {
     starforce_tbody.innerHTML = ''
 
-    const show_zero_row = document.getElementById('show_zero_row').checked
+    const hide_empty_row = document.getElementById('hide_empty_row').checked
     const show_only_prob = document.getElementById('show_only_prob').checked
 
     let innerHTML = ''
 
     starforces.forEach((starforce) => {
-        if (!show_zero_row && starforce.count == 0) return
+        if (hide_empty_row && starforce.count == 0) return
 
         innerHTML += '<tr align="center">'
 
