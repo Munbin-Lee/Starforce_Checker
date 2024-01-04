@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>스타포스 체커</title>
 </head>
 
@@ -18,6 +18,12 @@
     <br />
     <input id="show_only_prob" type="checkbox" onclick="refresh_table()" title="기댓값 행에서 확률만을 표시합니다."
         placeholder="x" />확률만 표시
+    <br />
+    <input id="superior_on" type="checkbox" onclick="refresh_table()" title="슈페리얼 아이템의 강화 결과만을 표시합니다."
+        placeholder="x" />슈페리얼 아이템
+    <br />
+    <input id="catch_on" type="checkbox" onclick="refresh_table()" title="스타캐치를 성공한 결과만을 표시합니다."
+        placeholder="x" />스타캐치 ON
     <br />
     <br />
     <table width="90%" border="1">
