@@ -80,11 +80,10 @@ function refresh_table() {
     starforce_tbody.insertAdjacentHTML('afterbegin', innerHTML)
 }
 
-const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date=' +
-    new Date(new Date().getTime() + 1000 * 60 * 60 * 9).toISOString().slice(0, 10)
+const api_url_base = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date='
 
-function call_api() {
-    const api_key = document.getElementById('api_key_text').value
+async function call_api(api_key, date) {
+    const api_url = api_url_base + date
 
     fetch(api_url, {
         headers: {
@@ -93,12 +92,6 @@ function call_api() {
     })
         .then(response => response.json())
         .then(data => {
-            starforces = []
-
-            for (const x of Array(25).keys()) {
-                starforces.push(new Starforce(x));
-            }
-
             for (const history of Object.values(data.starforce_history)) {
                 star = history.before_starforce_count
                 starforces[star].count += 1
@@ -112,11 +105,41 @@ function call_api() {
                     starforces[star].destory_observed += 1
                 }
             }
-
-            refresh_table()
         })
+        .then(() => refresh_table())
         .catch(error => {
             console.log(error)
-            alert("API KEY가 잘못되었습니다.")
         })
+}
+
+function sleep(ms) {
+    return new Promise((r) => setTimeout(r, ms));
+}
+
+const date_from = new Date("2023-12-27T09:00:00")
+const date_to = new Date()
+date_to.setHours(date_to.getHours() + 9)
+
+async function call_api_all() {
+    const api_key = document.getElementById('api_key_text').value
+
+    const date = date_from
+
+    starforces = []
+
+    for (const x of Array(25).keys()) {
+        starforces.push(new Starforce(x));
+    }
+
+    while (date <= date_to) {
+        const param_date = date.toISOString().slice(0, 10)
+
+        console.log(param_date)
+
+        await sleep(250)
+
+        call_api(api_key, param_date)
+
+        date.setDate(date.getDate() + 1)
+    }
 }
