@@ -80,7 +80,8 @@ function refresh_table() {
     starforce_tbody.insertAdjacentHTML('afterbegin', innerHTML)
 }
 
-const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=10&date=2024-01-04'
+const api_url = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date=' +
+    new Date().toISOString().slice(0, 10)
 
 function call_api() {
     const api_key = document.getElementById('api_key_text').value
