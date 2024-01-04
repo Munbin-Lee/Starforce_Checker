@@ -116,6 +116,7 @@ function call_api() {
             refresh_table()
         })
         .catch(error => {
+            console.log(error)
             alert("API KEY가 잘못되었습니다.")
         })
 }
