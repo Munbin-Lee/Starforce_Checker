@@ -111,8 +111,6 @@ function call_api() {
                 } else {
                     starforces[star].destory_observed += 1
                 }
-
-                console.log(history);
             }
 
             refresh_table()
