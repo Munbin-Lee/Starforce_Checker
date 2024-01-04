@@ -5,30 +5,38 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=1280">
     <title>스타포스 체커</title>
+    <script defer src="./starforce.js"></script>
 </head>
 
 <body>
     Data based on NEXON Open API
     <br />
     <br />
+
     <input id="api_key_text" type="text" size="110" placeholder="API KEY" />
     <br />
+
     <input type="button" value="스타포스 기록 불러오기" onclick="call_api_all()" />
     <br />
     <br />
-    <input id="hide_empty_row" type="checkbox" onclick="refresh_table()" title="강화 횟수가 0인 강화 결과를 표시하지 않습니다."
-        placeholder="x" />강화 횟수가 0인 행 숨기기
+
+    <input id="hide_empty_row" type="checkbox" onclick="refresh_table()" title="강화 횟수가 0인 강화 결과를 표시하지 않습니다." />
+    강화 횟수가 0인 행 숨기기
     <br />
-    <input id="show_only_prob" type="checkbox" onclick="refresh_table()" title="기댓값 행에서 확률만을 표시합니다."
-        placeholder="x" />확률만 표시
+
+    <input id="show_only_prob" type="checkbox" onclick="refresh_table()" title="기댓값 행에서 확률만을 표시합니다." />
+    확률만 표시
     <br />
-    <input id="superior_on" type="checkbox" onclick="refresh_table()" title="슈페리얼 아이템의 강화 결과만을 표시합니다."
-        placeholder="x" /><del>슈페리얼 아이템</del>
+
+    <input id="superior_on" type="checkbox" onclick="refresh_table()" title="슈페리얼 아이템의 강화 결과만을 표시합니다." />
+    <del>슈페리얼 아이템</del>
     <br />
-    <input id="catch_on" type="checkbox" onclick="refresh_table()" title="스타캐치를 성공한 결과만을 표시합니다."
-        placeholder="x" /><del>스타캐치 ON</del>
+
+    <input id="catch_on" type="checkbox" onclick="refresh_table()" title="스타캐치를 성공한 결과만을 표시합니다." />
+    <del>스타캐치 ON</del>
     <br />
     <br />
+
     <table width="75%" border="1">
         <thead align="center">
             <tr>
@@ -44,7 +52,6 @@
         </thead>
         <tbody id="starforce_tbody"> </tbody>
     </table>
-    <script type="text/javascript" src="starforce.js"></script>
 </body>
 
 </html>
