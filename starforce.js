@@ -1,82 +1,113 @@
-function getSuccessRate(star) {
-    if (star <= 2) return 95 - 5 * star
-    if (star <= 14) return 100 - 5 * star
-    if (star <= 21) return 30
-    return 25 - star
-}
-
-function getDestroyRate(star) {
-    if (star <= 14) return 0
-    if (star <= 17) return 2.1
-    if (star <= 19) return 2.8
-    if (star <= 21) return 7
-    if (star == 22) return 19.4
-    if (star == 23) return 29.4
-    return 39.6
-}
-
-class Starforce {
-    constructor(star) {
+class StarforceStat {
+    constructor(star, successRate, destroyRate, failRate) {
         this.star = star
-        this.count = 0
-        this.success_rate = getSuccessRate(star)
-        this.success_observed = 0
-        this.destory_rate = getDestroyRate(star)
-        this.destory_observed = 0
-        this.fail_rate = 100 - getSuccessRate(star) - getDestroyRate(star)
-        this.fail_observed = 0
+        this.successRate = successRate
+        this.destroyRate = destroyRate
+        this.failRate = failRate
+        this.totalObserved = 0
+        this.successObserved = 0
+        this.destroyObserved = 0
+        this.failObserved = 0
     }
 }
 
-let starforces = []
+class StarforceResult {
+    static maxStar = 25
+
+    getSuccessRate(star) {
+        return 0
+    }
+
+    getDestroyRate(star) {
+        return 0
+    }
+
+    constructor() {
+        this.stats = []
+
+        for (const star of Array(this.constructor.maxStar).keys()) {
+            const successRate = this.constructor.getSuccessRate(star)
+            const destoryRate = this.constructor.getDestroyRate(star)
+            const failRate = 10000 - successRate - destoryRate
+            const stat = new StarforceStat(star, successRate, destoryRate, failRate)
+            this.stats.push(stat)
+        }
+    }
+}
+
+class NormalResult extends StarforceResult {
+    static getSuccessRate(star) {
+        if (star <= 2) return 9500 - 500 * star
+        if (star <= 14) return 10000 - 500 * star
+        if (star <= 21) return 3000
+        return 2500 - 100 * star
+    }
+
+    static getDestroyRate(star) {
+        if (star <= 14) return 0
+        if (star <= 17) return 210
+        if (star <= 19) return 280
+        if (star <= 21) return 700
+        if (star == 22) return 1940
+        if (star == 23) return 2940
+        return 3960
+    }
+}
+
+class CatchResult extends StarforceResult {
+    static getSuccessRate(star) {
+        if (star <= 2) return 9975 - 525 * star
+        if (star <= 14) return 10500 - 525 * star
+        if (star <= 21) return 3150
+        return 2625 - 105 * star
+    }
+
+    static getDestroyRate(star) {
+        if (star <= 14) return 0
+        if (star <= 17) return 206
+        if (star <= 19) return 274
+        if (star <= 21) return 685
+        if (star == 22) return 1937
+        if (star == 23) return 2937
+        return 3958
+    }
+}
+
+const starforceResults = [new NormalResult(), new CatchResult()]
 
 const starforceTbody = document.getElementById('starforce_tbody')
 
 function refreshTable() {
-    starforceTbody.innerHTML = ''
-
     const hideEmptyRow = document.getElementById('hide_empty_row').checked
     const onlyShowProb = document.getElementById('only_show_prob').checked
 
+    const stats = starforceResults[0].stats
+
     let innerHTML = ''
 
-    starforces.forEach((starforce) => {
-        if (hideEmptyRow && starforce.count == 0) return
+    stats.forEach((stat) => {
+        if (hideEmptyRow && stat.totalObserved == 0) return
 
         innerHTML += '<tr align="center">'
 
-        innerHTML += '<td>' + starforce.star + ' -> ' + (starforce.star + 1) + '</td>';
-        innerHTML += '<td>' + starforce.count + '</td>'
+        innerHTML += '<td>' + stat.star + ' -> ' + (stat.star + 1) + '</td>';
+        innerHTML += '<td>' + stat.totalObserved + '</td>'
 
-        innerHTML += '<td>' + starforce.success_rate.toFixed(2) + '%'
-        if (!onlyShowProb) innerHTML += ' , ' + (starforce.count * starforce.success_rate / 100).toFixed(2) + '회'
-        innerHTML += '</td>'
+        for (const [rate, observed] of [[stat.successRate, stat.successObserved],
+        [stat.failRate, stat.failObserved], [stat.destoryRate, stat.destroyObserved]]) {
+            innerHTML += '<td>' + (rate / 100).toFixed(2) + '%'
+            if (!onlyShowProb) innerHTML += ' , ' + (rate * stat.totalObserved / 10000).toFixed(2) + '회'
+            innerHTML += '</td>'
 
-        innerHTML += '<td>' + (starforce.success_observed / starforce.count * 100).toFixed(2) + '%'
-        if (!onlyShowProb) innerHTML += ' , ' + starforce.success_observed + '회'
-        innerHTML += '</td>'
-
-        innerHTML += '<td>' + starforce.fail_rate.toFixed(2) + '%'
-        if (!onlyShowProb) innerHTML += ' , ' + (starforce.count * starforce.fail_rate / 100).toFixed(2) + '회'
-        innerHTML += '</td>'
-
-        innerHTML += '<td>' + (starforce.fail_observed / starforce.count * 100).toFixed(2) + '%'
-        if (!onlyShowProb) innerHTML += ' , ' + starforce.fail_observed + '회'
-        innerHTML += '</td>'
-
-        innerHTML += '<td>' + starforce.destory_rate.toFixed(2) + '%'
-        if (!onlyShowProb) innerHTML += ' , ' + (starforce.count * starforce.destory_rate / 100).toFixed(2) + '회'
-        innerHTML += '</td>'
-
-        innerHTML += '<td>' + (starforce.destory_observed / starforce.count * 100).toFixed(2) + '%'
-        if (!onlyShowProb) innerHTML += ' , ' + starforce.destory_observed + '회'
-        innerHTML += '</td>'
+            innerHTML += '<td>' + (observed / stat.totalObserved * 100).toFixed(2) + '%'
+            if (!onlyShowProb) innerHTML += ' , ' + observed + '회'
+            innerHTML += '</td>'
+        }
 
         innerHTML += '</tr>'
-
-
     })
 
+    starforceTbody.innerHTML = ''
     starforceTbody.insertAdjacentHTML('afterbegin', innerHTML)
 }
 
@@ -93,16 +124,17 @@ async function getStarforceData(apiKey, date) {
         .then(response => response.json())
         .then(data => {
             for (const history of Object.values(data.starforce_history)) {
-                star = history.before_starforce_count
-                starforces[star].count += 1
+                const star = history.before_starforce_count
+                const stat = starforceResults[0].stats[star]
+                stat.totalObserved += 1
 
                 if (history.item_upgrade_result == '성공') {
-                    starforces[star].success_observed += 1
+                    stat.successObserved += 1
                 } else if (history.item_upgrade_result == '실패(유지)' ||
                     history.item_upgrade_result == '실패(하락)') {
-                    starforces[star].fail_observed += 1
+                    stat.failObserved += 1
                 } else {
-                    starforces[star].destory_observed += 1
+                    stat.destroyObserved += 1
                 }
             }
         })
@@ -118,16 +150,13 @@ function sleep(ms) {
 
 const dateFrom = new Date("2023-12-27T09:00:00")
 const dateTo = new Date()
-dateTo.setHours(dateTo.getHours() + 9)
+dateTo.setHours(9)
 
 async function getAllStarforceData() {
     const apiKey = document.getElementById('api_key_text').value
 
-    starforces = []
-
-    for (const x of Array(25).keys()) {
-        starforces.push(new Starforce(x));
-    }
+    starforceResults[0] = new NormalResult()
+    starforceResults[1] = new CatchResult()
 
     for (const date = dateFrom; date <= dateTo; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
