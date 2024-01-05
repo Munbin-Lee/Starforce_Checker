@@ -27,9 +27,9 @@ class StarforceResult {
 
         for (const star of Array(this.constructor.maxStar).keys()) {
             const successRate = this.constructor.getSuccessRate(star)
-            const destoryRate = this.constructor.getDestroyRate(star)
-            const failRate = 10000 - successRate - destoryRate
-            const stat = new StarforceStat(star, successRate, destoryRate, failRate)
+            const destroyRate = this.constructor.getDestroyRate(star)
+            const failRate = 10000 - successRate - destroyRate
+            const stat = new StarforceStat(star, successRate, destroyRate, failRate)
             this.stats.push(stat)
         }
     }
@@ -94,7 +94,7 @@ function refreshTable() {
         innerHTML += '<td>' + stat.totalObserved + '</td>'
 
         for (const [rate, observed] of [[stat.successRate, stat.successObserved],
-        [stat.failRate, stat.failObserved], [stat.destoryRate, stat.destroyObserved]]) {
+        [stat.failRate, stat.failObserved], [stat.destroyRate, stat.destroyObserved]]) {
             innerHTML += '<td>' + (rate / 100).toFixed(2) + '%'
             if (!onlyShowProb) innerHTML += ' , ' + (rate * stat.totalObserved / 10000).toFixed(2) + '회'
             innerHTML += '</td>'
