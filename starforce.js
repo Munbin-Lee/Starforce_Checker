@@ -128,6 +128,10 @@ async function getStarforceData(apiKey, date) {
             for (const history of Object.values(data.starforce_history)) {
                 if (history.chance_time == '찬스타임 적용') continue
 
+                if (history.superior_item_flag == '슈페리얼 장비') continue
+
+                if (history.destroy_defence == '파괴 방지 적용') continue
+
                 const star = history.before_starforce_count
 
                 let stat = starforceResults[0].stats[star]
