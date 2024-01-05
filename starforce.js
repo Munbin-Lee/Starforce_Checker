@@ -269,6 +269,12 @@ async function getAllStarforceData() {
 
     const apiKey = document.getElementById('api_key_text').value
 
+    if (apiKey == '') {
+        alert('API Key를 입력하세요.\nhttps://openapi.nexon.com/my-application/ 에서 발급받을 수 있습니다.')
+        getDataButton.disabled = false
+        return
+    }
+
     const expirationDate = new Date()
     expirationDate.setFullYear(expirationDate.getFullYear() + 1)
     document.cookie = 'apiKey=' + apiKey + '; expires=' + expirationDate.toUTCString()
