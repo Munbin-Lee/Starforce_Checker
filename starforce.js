@@ -154,6 +154,9 @@ const dateTo = new Date()
 dateTo.setHours(9)
 
 async function getAllStarforceData() {
+    const getDataButton = document.getElementById('get_data_button')
+    getDataButton.disabled = true
+
     const apiKey = document.getElementById('api_key_text').value
 
     starforceResults[0] = new NormalResult()
@@ -168,4 +171,6 @@ async function getAllStarforceData() {
     }
 
     refreshTable()
+
+    getDataButton.disabled = false
 }
