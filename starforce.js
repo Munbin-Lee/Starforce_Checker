@@ -79,6 +79,7 @@ const starforceTbody = document.getElementById('starforce_tbody')
 
 function refreshTable() {
     const hideEmptyRow = document.getElementById('hide_empty_row').checked
+    const hideLowStar = document.getElementById('hide_low_star').checked
     const onlyShowProb = document.getElementById('only_show_prob').checked
     const catchOn = document.getElementById('catch_on').checked
 
@@ -89,6 +90,8 @@ function refreshTable() {
 
     stats.forEach((stat) => {
         if (hideEmptyRow && stat.totalObserved == 0) return
+
+        if (hideLowStar && stat.star < 15) return
 
         innerHTML += '<tr align="center">'
 
