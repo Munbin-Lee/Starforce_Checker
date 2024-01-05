@@ -156,11 +156,15 @@ function refreshTable() {
         for (const [rate, observed] of [[stat.successRate, stat.successObserved],
         [stat.failRate, stat.failObserved], [stat.destroyRate, stat.destroyObserved]]) {
             innerHTML += '<td>' + (rate / 100).toFixed(2) + '%'
-            if (!onlyShowProb) innerHTML += ' , ' + (rate * stat.totalObserved / 10000).toFixed(2) + '회'
+            if (!onlyShowProb && stat.totalObserved != 0) innerHTML += ' , ' + (rate * stat.totalObserved / 10000).toFixed(2) + '회'
             innerHTML += '</td>'
 
-            innerHTML += '<td>' + (observed / stat.totalObserved * 100).toFixed(2) + '%'
-            if (!onlyShowProb) innerHTML += ' , ' + observed + '회'
+            innerHTML += '<td>'
+            if (stat.totalObserved != 0) {
+                innerHTML += (observed / stat.totalObserved * 100).toFixed(2) + '%'
+                if (!onlyShowProb && stat.totalObserved != 0) innerHTML += ' , '
+                if (!onlyShowProb) innerHTML += observed + '회'
+            }
             innerHTML += '</td>'
         }
 
@@ -264,7 +268,7 @@ function getCookieValue(name) {
 
 window.onload = () => {
     refreshTable()
-    
+
     const apiKey = getCookieValue('apiKey')
 
     if (apiKey == null) return
