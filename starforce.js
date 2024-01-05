@@ -167,6 +167,10 @@ async function getAllStarforceData() {
 
     const apiKey = document.getElementById('api_key_text').value
 
+    const expirationDate = new Date()
+    expirationDate.setFullYear(expirationDate.getFullYear() + 1)
+    document.cookie = 'apiKey=' + apiKey + '; expires=' + expirationDate.toUTCString()
+
     starforceResults[0] = new NormalResult()
     starforceResults[1] = new CatchResult()
 
@@ -181,4 +185,21 @@ async function getAllStarforceData() {
     refreshTable()
 
     getDataButton.disabled = false
+}
+
+function getCookieValue(name) {
+    const regex = new RegExp(`(^| )${name}=([^;]+)`)
+    const match = document.cookie.match(regex)
+
+    if (match) return match[2]
+
+    return null
+}
+
+window.onload = () => {
+    const apiKey = getCookieValue('apiKey')
+
+    if (apiKey == null) return
+
+    document.getElementById('api-key-text').value = apiKey
 }
