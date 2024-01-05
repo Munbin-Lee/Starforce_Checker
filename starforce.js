@@ -225,13 +225,47 @@ function sleep(ms) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
-const dateFrom = new Date('2023-12-27T09:00:00')
-const dateTo = new Date()
-dateTo.setHours(9)
-
 async function getAllStarforceData() {
     const getDataButton = document.getElementById('get_data_button')
     getDataButton.disabled = true
+
+    const dateBeginText = document.getElementById('date_begin_text')
+    const dateEndText = document.getElementById('date_end_text')
+
+    const dateBegin = new Date(dateBeginText.value)
+    let dateEnd = new Date(dateEndText.value)
+
+    if (isNaN(dateBegin)) {
+        alert('시작일에 올바른 날짜를 입력해주세요.\n(ex. 2023-12-27)')
+        getDataButton.disabled = false
+        return
+    }
+
+    if (isNaN(dateEnd)) {
+        alert('종료일에 올바른 날짜를 입력해주세요.\n(ex. 2024-01-10)')
+        getDataButton.disabled = false
+        return
+    }
+
+    const currentDate = new Date()
+    currentDate.setHours(9)
+
+    if (dateEnd > currentDate) {
+        dateEnd = currentDate
+        dateEndText.value = dateEnd.toISOString().slice(0, 10)
+    }
+
+    if (dateBegin < new Date('2023-12-27')) {
+        alert('시작일에 2023-12-27 이후의 날짜를 입력해주세요.')
+        getDataButton.disabled = false
+        return
+    }
+
+    if (dateBegin > dateEnd) {
+        alert('종료일이 시작일보다 빠릅니다.')
+        getDataButton.disabled = false
+        return
+    }
 
     const apiKey = document.getElementById('api_key_text').value
 
@@ -244,7 +278,7 @@ async function getAllStarforceData() {
     starforceResults[2] = new SuperiorResult()
     starforceResults[3] = new SuperiorCatchResult()
 
-    for (const date = dateFrom; date <= dateTo; date.setDate(date.getDate() + 1)) {
+    for (const date = dateBegin; date <= dateEnd; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
 
         await getStarforceData(apiKey, paramDate)
@@ -267,11 +301,12 @@ function getCookieValue(name) {
 }
 
 window.onload = () => {
-    refreshTable()
-
     const apiKey = getCookieValue('apiKey')
+    if (apiKey) document.getElementById('api_key_text').value = apiKey
 
-    if (apiKey == null) return
+    const currentDate = new Date()
+    currentDate.setHours(9)
+    document.getElementById('date_end_text').value = currentDate.toISOString().slice(0, 10)
 
-    document.getElementById('api_key_text').value = apiKey
+    refreshTable()
 }
