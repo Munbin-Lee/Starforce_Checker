@@ -194,6 +194,10 @@ async function getStarforceData(apiKey, date) {
 
                 const star = history.before_starforce_count
 
+                if (history.superior_item_flag != '슈페리얼 장비'
+                    && history.starforce_event_list != null
+                    && (star == 5 || star == 10 || star == 15)) continue
+
                 let stat = starforceResults[0].stats[star]
 
                 if (history.superior_item_flag != '슈페리얼 장비' && history.starcatch_result == '성공') {
