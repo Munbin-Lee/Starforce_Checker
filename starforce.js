@@ -266,7 +266,7 @@ async function getAllStarforceData() {
     }
 
     if (dateBegin > dateEnd) {
-        alert('종료일이 시작일보다 빠릅니다.')
+        alert('종료일이 시작일보다 이릅니다.')
         getDataButton.disabled = false
         return
     }
