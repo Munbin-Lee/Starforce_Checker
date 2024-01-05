@@ -38,7 +38,7 @@ class StarforceResult {
 class NormalResult extends StarforceResult {
     getSuccessRate(star) {
         if (star <= 2) return 9500 - 500 * star
-        if (star <= 14) return 10000 - 500 * star
+        if (star <= 13) return 10000 - 500 * star
         if (star <= 21) return 3000
         return 2500 - 100 * star
     }
@@ -57,7 +57,7 @@ class NormalResult extends StarforceResult {
 class CatchResult extends StarforceResult {
     getSuccessRate(star) {
         if (star <= 2) return 9975 - 525 * star
-        if (star <= 14) return 10500 - 525 * star
+        if (star <= 13) return 10500 - 525 * star
         if (star <= 21) return 3150
         return 2625 - 105 * star
     }
@@ -77,19 +77,19 @@ class SuperiorResult extends StarforceResult {
     static maxStar = 15
 
     getSuccessRate(star) {
-        if (star == 0) return 5000
-        if (star <= 3) return 5500 - 500 * star
+        if (star <= 1) return 5000
+        if (star == 2) return 4500
         if (star <= 8) return 4000
-        if (star <= 10) return 5500 - 200 * star
-        if (star == 11) return 3500
+        if (star == 9) return 3700
+        if (star <= 11) return 3500
         return 1500 - 100 * star
     }
 
     getDestroyRate(star) {
         if (star <= 4) return 0
         if (star <= 7) return 120 * star - 420
-        if (star <= 9) return 350 * star - 2200
-        if (star <= 11) return 330 * star - 2000
+        if (star <= 10) return 350 * star - 2200
+        if (star == 11) return 1630
         return 4250 + 50 * star
     }
 }
@@ -98,20 +98,26 @@ class SuperiorCatchResult extends StarforceResult {
     static maxStar = 15
 
     getSuccessRate(star) {
-        if (star == 0) return 5000
-        if (star <= 3) return 5500 - 500 * star
-        if (star <= 8) return 4000
-        if (star <= 10) return 5500 - 200 * star
-        if (star == 11) return 3500
-        return 1500 - 100 * star
+        if (star <= 1) return 5250
+        if (star == 2) return 4725
+        if (star <= 8) return 4200
+        if (star == 9) return 3885
+        if (star <= 11) return 3675
+        return 1575 - 105 * star
     }
 
     getDestroyRate(star) {
         if (star <= 4) return 0
-        if (star <= 7) return 120 * star - 420
-        if (star <= 9) return 350 * star - 2200
-        if (star <= 11) return 330 * star - 2000
-        return 4250 + 50 * star
+        if (star == 5) return 174
+        if (star == 6) return 290
+        if (star == 7) return 406
+        if (star == 8) return 580
+        if (star == 9) return 922
+        if (star == 10) return 1265
+        if (star == 11) return 1586
+        if (star == 12) return 4843
+        if (star == 13) return 4895
+        if (star == 14) return 4948
     }
 }
 
