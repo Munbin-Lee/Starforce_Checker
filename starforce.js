@@ -124,6 +124,8 @@ async function getStarforceData(apiKey, date) {
         .then(response => response.json())
         .then(data => {
             for (const history of Object.values(data.starforce_history)) {
+                if (history.chance_time == "찬스타임 적용") continue
+
                 const star = history.before_starforce_count
                 const stat = starforceResults[0].stats[star]
                 stat.totalObserved += 1
@@ -138,7 +140,6 @@ async function getStarforceData(apiKey, date) {
                 }
             }
         })
-        .then(() => refreshTable())
         .catch(error => {
             console.log(error)
         })
@@ -161,8 +162,10 @@ async function getAllStarforceData() {
     for (const date = dateFrom; date <= dateTo; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
 
-        getStarforceData(apiKey, paramDate)
+        await getStarforceData(apiKey, paramDate)
 
-        await sleep(250)
+        await sleep(200)
     }
+
+    refreshTable()
 }
