@@ -263,6 +263,8 @@ function getCookieValue(name) {
 }
 
 window.onload = () => {
+    refreshTable()
+    
     const apiKey = getCookieValue('apiKey')
 
     if (apiKey == null) return
