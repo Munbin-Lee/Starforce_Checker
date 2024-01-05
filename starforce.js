@@ -80,8 +80,10 @@ const starforceTbody = document.getElementById('starforce_tbody')
 function refreshTable() {
     const hideEmptyRow = document.getElementById('hide_empty_row').checked
     const onlyShowProb = document.getElementById('only_show_prob').checked
+    const catchOn = document.getElementById('catch_on').checked
 
-    const stats = starforceResults[0].stats
+    let stats = starforceResults[0].stats
+    if (catchOn) stats = starforceResults[1].stats
 
     let innerHTML = ''
 
@@ -124,10 +126,16 @@ async function getStarforceData(apiKey, date) {
         .then(response => response.json())
         .then(data => {
             for (const history of Object.values(data.starforce_history)) {
-                if (history.chance_time == "찬스타임 적용") continue
+                if (history.chance_time == '찬스타임 적용') continue
 
                 const star = history.before_starforce_count
-                const stat = starforceResults[0].stats[star]
+
+                let stat = starforceResults[0].stats[star]
+
+                if (history.starcatch_result == '성공') {
+                    stat = starforceResults[1].stats[star]
+                }
+
                 stat.totalObserved += 1
 
                 if (history.item_upgrade_result == '성공') {
@@ -149,7 +157,7 @@ function sleep(ms) {
     return new Promise((r) => setTimeout(r, ms));
 }
 
-const dateFrom = new Date("2023-12-27T09:00:00")
+const dateFrom = new Date('2023-12-27T09:00:00')
 const dateTo = new Date()
 dateTo.setHours(9)
 
