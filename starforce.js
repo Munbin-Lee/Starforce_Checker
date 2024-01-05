@@ -26,8 +26,8 @@ class StarforceResult {
         this.stats = []
 
         for (const star of Array(this.constructor.maxStar).keys()) {
-            const successRate = this.constructor.getSuccessRate(star)
-            const destroyRate = this.constructor.getDestroyRate(star)
+            const successRate = this.getSuccessRate(star)
+            const destroyRate = this.getDestroyRate(star)
             const failRate = 10000 - successRate - destroyRate
             const stat = new StarforceStat(star, successRate, destroyRate, failRate)
             this.stats.push(stat)
@@ -36,14 +36,14 @@ class StarforceResult {
 }
 
 class NormalResult extends StarforceResult {
-    static getSuccessRate(star) {
+    getSuccessRate(star) {
         if (star <= 2) return 9500 - 500 * star
         if (star <= 14) return 10000 - 500 * star
         if (star <= 21) return 3000
         return 2500 - 100 * star
     }
 
-    static getDestroyRate(star) {
+    getDestroyRate(star) {
         if (star <= 14) return 0
         if (star <= 17) return 210
         if (star <= 19) return 280
@@ -55,14 +55,14 @@ class NormalResult extends StarforceResult {
 }
 
 class CatchResult extends StarforceResult {
-    static getSuccessRate(star) {
+    getSuccessRate(star) {
         if (star <= 2) return 9975 - 525 * star
         if (star <= 14) return 10500 - 525 * star
         if (star <= 21) return 3150
         return 2625 - 105 * star
     }
 
-    static getDestroyRate(star) {
+    getDestroyRate(star) {
         if (star <= 14) return 0
         if (star <= 17) return 206
         if (star <= 19) return 274
@@ -73,7 +73,49 @@ class CatchResult extends StarforceResult {
     }
 }
 
-const starforceResults = [new NormalResult(), new CatchResult()]
+class SuperiorResult extends StarforceResult {
+    static maxStar = 15
+
+    getSuccessRate(star) {
+        if (star == 0) return 5000
+        if (star <= 3) return 5500 - 500 * star
+        if (star <= 8) return 4000
+        if (star <= 10) return 5500 - 200 * star
+        if (star == 11) return 3500
+        return 1500 - 100 * star
+    }
+
+    getDestroyRate(star) {
+        if (star <= 4) return 0
+        if (star <= 7) return 120 * star - 420
+        if (star <= 9) return 350 * star - 2200
+        if (star <= 11) return 330 * star - 2000
+        return 4250 + 50 * star
+    }
+}
+
+class SuperiorCatchResult extends StarforceResult {
+    static maxStar = 15
+
+    getSuccessRate(star) {
+        if (star == 0) return 5000
+        if (star <= 3) return 5500 - 500 * star
+        if (star <= 8) return 4000
+        if (star <= 10) return 5500 - 200 * star
+        if (star == 11) return 3500
+        return 1500 - 100 * star
+    }
+
+    getDestroyRate(star) {
+        if (star <= 4) return 0
+        if (star <= 7) return 120 * star - 420
+        if (star <= 9) return 350 * star - 2200
+        if (star <= 11) return 330 * star - 2000
+        return 4250 + 50 * star
+    }
+}
+
+const starforceResults = [new NormalResult(), new CatchResult(), new SuperiorResult(), new SuperiorCatchResult()]
 
 const starforceTbody = document.getElementById('starforce_tbody')
 
@@ -81,17 +123,24 @@ function refreshTable() {
     const hideEmptyRow = document.getElementById('hide_empty_row').checked
     const hideLowStar = document.getElementById('hide_low_star').checked
     const onlyShowProb = document.getElementById('only_show_prob').checked
+    const superiorOn = document.getElementById('superior_on').checked
     const catchOn = document.getElementById('catch_on').checked
 
     let stats = starforceResults[0].stats
-    if (catchOn) stats = starforceResults[1].stats
+    if (!superiorOn && catchOn) {
+        stats = starforceResults[1].stats
+    } else if (superiorOn && !catchOn) {
+        stats = starforceResults[2].stats
+    } else if (superiorOn && catchOn) {
+        stats = starforceResults[3].stats
+    }
 
     let innerHTML = ''
 
     stats.forEach((stat) => {
         if (hideEmptyRow && stat.totalObserved == 0) return
 
-        if (hideLowStar && stat.star < 15) return
+        if (hideLowStar && !superiorOn && stat.star < 15) return
 
         innerHTML += '<tr align="center">'
 
@@ -131,16 +180,18 @@ async function getStarforceData(apiKey, date) {
             for (const history of Object.values(data.starforce_history)) {
                 if (history.chance_time == '찬스타임 적용') continue
 
-                if (history.superior_item_flag == '슈페리얼 장비') continue
-
                 if (history.destroy_defence == '파괴 방지 적용') continue
 
                 const star = history.before_starforce_count
 
                 let stat = starforceResults[0].stats[star]
 
-                if (history.starcatch_result == '성공') {
+                if (history.superior_item_flag != '슈페리얼 장비' && history.starcatch_result == '성공') {
                     stat = starforceResults[1].stats[star]
+                } else if (history.superior_item_flag == '슈페리얼 장비' && history.starcatch_result != '성공') {
+                    stat = starforceResults[2].stats[star]
+                } else if (history.superior_item_flag == '슈페리얼 장비' && history.starcatch_result == '성공') {
+                    stat = starforceResults[3].stats[star]
                 }
 
                 stat.totalObserved += 1
@@ -180,6 +231,8 @@ async function getAllStarforceData() {
 
     starforceResults[0] = new NormalResult()
     starforceResults[1] = new CatchResult()
+    starforceResults[2] = new SuperiorResult()
+    starforceResults[3] = new SuperiorCatchResult()
 
     for (const date = dateFrom; date <= dateTo; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
