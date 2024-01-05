@@ -201,5 +201,5 @@ window.onload = () => {
 
     if (apiKey == null) return
 
-    document.getElementById('api-key-text').value = apiKey
+    document.getElementById('api_key_text').value = apiKey
 }
