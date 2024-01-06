@@ -148,7 +148,7 @@ function refreshTable() {
 
         if (hideLowStar && !superiorOn && stat.star < 15) return
 
-        innerHTML += '<tr align="center">'
+        innerHTML += '<tr>'
 
         innerHTML += '<td>' + stat.star + ' -> ' + (stat.star + 1) + '</td>';
         innerHTML += '<td>' + stat.totalObserved + '</td>'
