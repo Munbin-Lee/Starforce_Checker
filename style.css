@@ -26,13 +26,26 @@ tbody tr:hover {
     cursor: pointer;
 }
 
-@media (prefers-color-scheme: dark) {
-    body {
-        background: #000;
-        color: #fff;
-    }
+body.dark {
+    background: #000;
+    color: #fff;
+}
 
-    tbody tr:hover {
-        background-color: #555;
-    }
+body.dark tbody tr:hover {
+    background-color: #555;
+}
+
+#dark_mode_button {
+    float: right;
+    margin-right: 10%;
+    width: 80px;
+    height: 50px;
+}
+
+.input_button:hover {
+    cursor: pointer;
+}
+
+.input_checkbox:hover {
+    cursor: pointer;
 }

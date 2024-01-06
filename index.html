@@ -5,13 +5,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=1280">
     <title>스타포스 체커</title>
+    <script defer src="./darkmode.js"></script>
     <script defer src="./starforce.js"></script>
     <link rel="stylesheet" type="text/css" href="https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css">
     <link rel="stylesheet" type="text/css" href="./style.css">
 </head>
 
 <body>
-    <br />
+    <input id="dark_mode_button" class="input_button" type="button" value="다크 모드" onclick="flipColorMode()">
     Data based on NEXON Open API
     <br />
     <br />
@@ -24,27 +25,33 @@
     <input id="date_end_text" type="text" size="25" placeholder="종료일 (ex.2024-01-10)" />
     <br />
 
-    <input id="get_data_button" type="button" value="스타포스 기록 불러오기" onclick="getAllStarforceData()" />
+    <input id="get_data_button" class="input_button" type="button" value="스타포스 기록 불러오기"
+        onclick="getAllStarforceData()" />
     <br />
     <br />
 
-    <input id="hide_empty_row" type="checkbox" onclick="refreshTable()" title="강화 횟수가 0인 강화 결과를 표시하지 않습니다." />
+    <input id="hide_empty_row" class="input_checkbox" type="checkbox" onclick="refreshTable()"
+        title="강화 횟수가 0인 강화 결과를 표시하지 않습니다." />
     강화 횟수가 0인 행 숨기기
     <br />
 
-    <input id="hide_low_star" type="checkbox" onclick="refreshTable()" title="강화 수치가 15 미만인 강화 결과를 표시하지 않습니다." />
+    <input id="hide_low_star" class="input_checkbox" type="checkbox" onclick="refreshTable()"
+        title="강화 수치가 15 미만인 강화 결과를 표시하지 않습니다." />
     15성 미만 숨기기
     <br />
 
-    <input id="only_show_prob" type="checkbox" onclick="refreshTable()" title="기댓값 행에서 확률만을 표시합니다." />
+    <input id="only_show_prob" class="input_checkbox" type="checkbox" onclick="refreshTable()"
+        title="기댓값 행에서 확률만을 표시합니다." />
     확률만 표시
     <br />
 
-    <input id="superior_on" type="checkbox" onclick="refreshTable()" title="슈페리얼 아이템의 강화 결과만을 표시합니다." />
+    <input id="superior_on" class="input_checkbox" type="checkbox" onclick="refreshTable()"
+        title="슈페리얼 아이템의 강화 결과만을 표시합니다." />
     슈페리얼 아이템
     <br />
 
-    <input id="catch_on" type="checkbox" onclick="refreshTable()" title="스타캐치를 성공한 결과만을 표시합니다." />
+    <input id="catch_on" class="input_checkbox" type="checkbox" onclick="refreshTable()"
+        title="스타캐치를 성공한 결과만을 표시합니다." />
     스타캐치 ON
     <br />
     <br />
