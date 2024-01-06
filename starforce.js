@@ -172,8 +172,6 @@ function refreshTable() {
     const catchTotal = document.getElementById('catch_total').checked
     const catchOn = document.getElementById('catch_on').checked
     const catchOff = document.getElementById('catch_off').checked
-    const safeOn = document.getElementById('safe_on').checked
-    const safeOff = document.getElementById('safe_off').checked
 
     let result = starforceResults[0]
     if (superiorOn) result = starforceResults[1]
@@ -221,7 +219,7 @@ function refreshTable() {
     starforceTbody.insertAdjacentHTML('afterbegin', innerHTML)
 }
 
-const apiUrlBase = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date='
+const apiUrlBase = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&'
 
 let datas = []
 
@@ -274,7 +272,7 @@ function processData(target_item = '') {
 }
 
 async function getStarforceData(apiKey, date) {
-    const apiUrl = apiUrlBase + date
+    const apiUrl = apiUrlBase + 'date=' + date
 
     fetch(apiUrl, {
         headers: {
@@ -283,6 +281,29 @@ async function getStarforceData(apiKey, date) {
     })
         .then(response => response.json())
         .then(data => {
+            if (data.next_cursor != null) {
+                stack.push(data.next_cursor)
+            }
+            datas.push(data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+}
+
+async function getStarforceDataCursor(apiKey, cursor) {
+    const apiUrl = apiUrlBase + 'cursor=' + cursor
+
+    fetch(apiUrl, {
+        headers: {
+            'x-nxopen-api-key': apiKey
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.next_cursor != null) {
+                stack.push(data.next_cursor)
+            }
             datas.push(data)
         })
         .catch(error => {
@@ -293,6 +314,8 @@ async function getStarforceData(apiKey, date) {
 function sleep(ms) {
     return new Promise((r) => setTimeout(r, ms));
 }
+
+let stack = []
 
 async function getAllStarforceData() {
     const getDataButton = document.getElementById('get_data_button')
@@ -348,12 +371,21 @@ async function getAllStarforceData() {
     expirationDate.setFullYear(expirationDate.getFullYear() + 1)
     document.cookie = 'apiKey=' + apiKey + '; expires=' + expirationDate.toUTCString()
 
+    stack = []
     datas = []
 
     for (const date = dateBegin; date <= dateEnd; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
 
         await getStarforceData(apiKey, paramDate)
+
+        await sleep(200)
+    }
+
+    while (stack.length != 0) {
+        const top = stack.pop()
+
+        await getStarforceDataCursor(apiKey, top)
 
         await sleep(200)
     }
