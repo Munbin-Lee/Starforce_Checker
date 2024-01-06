@@ -172,6 +172,8 @@ function refreshTable() {
     const catchTotal = document.getElementById('catch_total').checked
     const catchOn = document.getElementById('catch_on').checked
     const catchOff = document.getElementById('catch_off').checked
+    const safeOn = document.getElementById('safe_on').checked
+    const safeOff = document.getElementById('safe_off').checked
 
     let result = starforceResults[0]
     if (superiorOn) result = starforceResults[1]
@@ -229,12 +231,9 @@ function processData(target_item = '') {
 
     for (const data of datas) {
         for (const history of Object.values(data.starforce_history)) {
-            console.log(history)
             if (target_item != '' && history.target_item.match(target_item) == null) continue
 
             if (history.chance_time == '찬스타임 적용') continue
-
-            if (history.destroy_defence == '파괴 방지 적용') continue
 
             const star = history.before_starforce_count
 
