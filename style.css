@@ -70,7 +70,7 @@ body.dark .input_button {
 }
 
 body.dark .input_text::placeholder {
-    color: white;
+    color: gray;
 }
 
 body.dark .input_button:disabled {
