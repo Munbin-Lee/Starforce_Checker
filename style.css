@@ -26,15 +26,6 @@ tbody tr:hover {
     cursor: pointer;
 }
 
-body.dark {
-    background: #000;
-    color: #fff;
-}
-
-body.dark tbody tr:hover {
-    background-color: #555;
-}
-
 #dark_mode_button {
     float: right;
     margin-right: 10%;
@@ -60,4 +51,24 @@ body.dark tbody tr:hover {
 #get_data_button {
     padding: 10px 10px;
     margin-top: 10px;
+}
+
+body.dark {
+    background: #000;
+    color: #fff;
+}
+
+body.dark tbody tr:hover {
+    background-color: #555;
+}
+
+body.dark .input_text,
+body.dark .input_button {
+    background: #3B3B3B;
+    color: white;
+    border: 1px solid #858585;
+}
+
+body.dark .input_text::placeholder {
+    color: white;
 }
