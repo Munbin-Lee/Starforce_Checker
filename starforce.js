@@ -223,7 +223,7 @@ const apiUrlBase = 'https://open.api.nexon.com/maplestory/v1/history/starforce?c
 
 let datas = []
 
-function processData(target_item) {
+function processData(target_item = '') {
     starforceResults[0] = new NormalResult()
     starforceResults[1] = new SuperiorResult()
 
@@ -274,7 +274,7 @@ function processData(target_item) {
 async function getStarforceData(apiKey, date) {
     const apiUrl = apiUrlBase + 'date=' + date
 
-    t=await fetch(apiUrl, {
+    fetch(apiUrl, {
         headers: {
             'x-nxopen-api-key': apiKey
         }
@@ -295,7 +295,7 @@ async function getStarforceData(apiKey, date) {
 async function getStarforceDataCursor(apiKey, cursor) {
     const apiUrl = apiUrlBase + 'cursor=' + cursor
 
-    t=await fetch(apiUrl, {
+    fetch(apiUrl, {
         headers: {
             'x-nxopen-api-key': apiKey
         }
@@ -379,27 +379,27 @@ async function getAllStarforceData() {
     for (const date = dateBegin; date <= dateEnd; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
 
-        t=await getStarforceData(apiKey, paramDate)
+        await getStarforceData(apiKey, paramDate)
 
-        t=await sleep(200)
+        await sleep(200)
     }
 
     while (stack.length != 0) {
         const top = stack.pop()
 
-        t=await getStarforceDataCursor(apiKey, top)
+        await getStarforceDataCursor(apiKey, top)
 
-        t=await sleep(200)
+        await sleep(200)
     }
 
-    processData('')
+    processData()
 
     getDataButton.disabled = false
 }
 
 function resetSearchText() {
     document.getElementById('search_text').value = ''
-    processData('')
+    processData()
 }
 
 function search() {
