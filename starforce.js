@@ -223,7 +223,7 @@ const apiUrlBase = 'https://open.api.nexon.com/maplestory/v1/history/starforce?c
 
 let datas = []
 
-function processData(target_item = '') {
+function processData(target_item) {
     starforceResults[0] = new NormalResult()
     starforceResults[1] = new SuperiorResult()
 
@@ -392,14 +392,14 @@ async function getAllStarforceData() {
         await sleep(200)
     }
 
-    processData()
+    processData('')
 
     getDataButton.disabled = false
 }
 
 function resetSearchText() {
     document.getElementById('search_text').value = ''
-    processData()
+    processData('')
 }
 
 function search() {
