@@ -46,6 +46,19 @@ body.dark tbody tr:hover {
     cursor: pointer;
 }
 
+.input_checkbox {
+    margin-top: 10px;
+}
+
 .input_checkbox:hover {
     cursor: pointer;
+}
+
+#api_key_text {
+    margin-bottom: 5px;
+}
+
+#get_data_button {
+    padding: 10px 10px;
+    margin-top: 10px;
 }
