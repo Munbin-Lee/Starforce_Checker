@@ -55,6 +55,12 @@ tbody tr:hover {
     margin-top: 10px;
 }
 
+#search_button,
+#reset_button {
+    padding: 5px 10px;
+    size: 50px;
+}
+
 body.dark {
     background: #000;
     color: #fff;

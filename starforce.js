@@ -216,6 +216,56 @@ function refreshTable() {
 
 const apiUrlBase = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&date='
 
+let datas = []
+
+function processData(target_item = '') {
+    starforceResults[0] = new NormalResult()
+    starforceResults[1] = new SuperiorResult()
+
+    for (const data of datas) {
+        for (const history of Object.values(data.starforce_history)) {
+            if (target_item && history.target_item != target_item) continue
+
+            if (history.chance_time == '찬스타임 적용') continue
+
+            if (history.destroy_defence == '파괴 방지 적용') continue
+
+            const star = history.before_starforce_count
+
+            if (history.superior_item_flag != '슈페리얼 장비'
+                && history.starforce_event_list != null
+                && (star == 5 || star == 10 || star == 15)) continue
+
+            let result = starforceResults[0]
+            if (history.superior_item_flag == '슈페리얼 장비') result = starforceResults[1]
+
+            let stat = result.stats[star]
+            if (history.starcatch_result == '성공') stat = result.catchStats[star]
+
+            const totalStat = result.totalStats[star]
+
+            stat.totalObserved += 1
+            totalStat.totalObserved += 1
+
+            totalStat.addSuccessRate(stat.successRate)
+            totalStat.addFailRate(stat.failRate)
+            totalStat.addDestroyRate(stat.destroyRate)
+
+            if (history.item_upgrade_result == '성공') {
+                stat.successObserved += 1
+                totalStat.successObserved += 1
+            } else if (history.item_upgrade_result == '실패(유지)' ||
+                history.item_upgrade_result == '실패(하락)') {
+                stat.failObserved += 1
+                totalStat.failObserved += 1
+            } else {
+                stat.destroyObserved += 1
+                totalStat.destroyObserved += 1
+            }
+        }
+    }
+}
+
 async function getStarforceData(apiKey, date) {
     const apiUrl = apiUrlBase + date
 
@@ -226,44 +276,7 @@ async function getStarforceData(apiKey, date) {
     })
         .then(response => response.json())
         .then(data => {
-            for (const history of Object.values(data.starforce_history)) {
-                if (history.chance_time == '찬스타임 적용') continue
-
-                if (history.destroy_defence == '파괴 방지 적용') continue
-
-                const star = history.before_starforce_count
-
-                if (history.superior_item_flag != '슈페리얼 장비'
-                    && history.starforce_event_list != null
-                    && (star == 5 || star == 10 || star == 15)) continue
-
-                let result = starforceResults[0]
-                if (history.superior_item_flag == '슈페리얼 장비') result = starforceResults[1]
-
-                let stat = result.stats[star]
-                if (history.starcatch_result == '성공') stat = result.catchStats[star]
-
-                const totalStat = result.totalStats[star]
-
-                stat.totalObserved += 1
-                totalStat.totalObserved += 1
-
-                totalStat.addSuccessRate(stat.successRate)
-                totalStat.addFailRate(stat.failRate)
-                totalStat.addDestroyRate(stat.destroyRate)
-
-                if (history.item_upgrade_result == '성공') {
-                    stat.successObserved += 1
-                    totalStat.successObserved += 1
-                } else if (history.item_upgrade_result == '실패(유지)' ||
-                    history.item_upgrade_result == '실패(하락)') {
-                    stat.failObserved += 1
-                    totalStat.failObserved += 1
-                } else {
-                    stat.destroyObserved += 1
-                    totalStat.destroyObserved += 1
-                }
-            }
+            datas.push(data)
         })
         .catch(error => {
             console.log(error)
@@ -328,8 +341,7 @@ async function getAllStarforceData() {
     expirationDate.setFullYear(expirationDate.getFullYear() + 1)
     document.cookie = 'apiKey=' + apiKey + '; expires=' + expirationDate.toUTCString()
 
-    starforceResults[0] = new NormalResult()
-    starforceResults[1] = new SuperiorResult()
+    datas = []
 
     for (const date = dateBegin; date <= dateEnd; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
@@ -339,6 +351,7 @@ async function getAllStarforceData() {
         await sleep(200)
     }
 
+    processData()
     refreshTable()
 
     getDataButton.disabled = false
