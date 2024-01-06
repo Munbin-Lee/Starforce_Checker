@@ -72,3 +72,10 @@ body.dark .input_button {
 body.dark .input_text::placeholder {
     color: white;
 }
+
+body.dark .input_button:disabled {
+    background: white;
+    color: #3B3B3B;
+    border: 1px solid white;
+    opacity: 0.5;
+}
