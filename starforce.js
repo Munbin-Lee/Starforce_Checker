@@ -288,6 +288,7 @@ async function getStarforceData(apiKey, date) {
         })
         .catch(error => {
             console.log(error)
+            alert(error)
         })
 }
 
@@ -308,6 +309,7 @@ async function getStarforceDataCursor(apiKey, cursor) {
         })
         .catch(error => {
             console.log(error)
+            alert(error)
         })
 }
 
