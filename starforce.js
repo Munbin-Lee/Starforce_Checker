@@ -381,7 +381,7 @@ async function getAllStarforceData() {
 
         await getStarforceData(apiKey, paramDate)
 
-        await sleep(200)
+        await sleep(250)
     }
 
     while (stack.length != 0) {
@@ -389,8 +389,10 @@ async function getAllStarforceData() {
 
         await getStarforceDataCursor(apiKey, top)
 
-        await sleep(200)
+        await sleep(250)
     }
+
+    await sleep(250)
 
     processData('')
 
