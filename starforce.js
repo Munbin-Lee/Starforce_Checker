@@ -11,6 +11,31 @@ class StarforceStat {
     }
 }
 
+class TotalStat extends StarforceStat {
+    constructor(star, successRate, destroyRate, failRate) {
+        super(star, successRate, destroyRate, failRate)
+
+        this.totalSuccessRate = 0
+        this.totalDestroyRate = 0
+        this.totalFailRate = 0
+    }
+
+    addSuccessRate(rate) {
+        this.totalSuccessRate += rate
+        this.successRate = this.totalSuccessRate / this.totalObserved
+    }
+
+    addDestroyRate(rate) {
+        this.totalDestroyRate += rate
+        this.destroyRate = this.totalDestroyRate / this.totalObserved
+    }
+
+    addFailRate(rate) {
+        this.totalFailRate += rate
+        this.failRate = this.totalFailRate / this.totalObserved
+    }
+}
+
 class StarforceResult {
     static maxStar = 25
 
@@ -31,14 +56,11 @@ class StarforceResult {
     }
 
     constructor() {
-        this.totalStats = []
         this.stats = []
         this.catchStats = []
+        this.totalStats = []
 
         for (const star of Array(this.constructor.maxStar).keys()) {
-            const totalStat = new StarforceStat(star, 0, 0, 0)
-            this.totalStats.push(totalStat)
-
             const successRate = this.getSuccessRate(star)
             const destroyRate = this.getDestroyRate(star)
             const failRate = 10000 - successRate - destroyRate
@@ -50,6 +72,9 @@ class StarforceResult {
             const catchfailRate = 10000 - catchSuccessRate - catchDestroyRate
             const catchStat = new StarforceStat(star, catchSuccessRate, catchDestroyRate, catchfailRate)
             this.catchStats.push(catchStat)
+
+            const totalStat = new TotalStat(star, successRate, destroyRate, failRate)
+            this.totalStats.push(totalStat)
         }
     }
 }
@@ -168,7 +193,8 @@ function refreshTable() {
 
         for (const [rate, observed] of [[stat.successRate, stat.successObserved],
         [stat.failRate, stat.failObserved], [stat.destroyRate, stat.destroyObserved]]) {
-            innerHTML += '<td>' + (rate / 100).toFixed(2) + '%'
+            innerHTML += '<td>'
+            innerHTML += (rate / 100).toFixed(2) + '%'
             if (!onlyShowProb && stat.totalObserved != 0) innerHTML += ' , ' + (rate * stat.totalObserved / 10000).toFixed(2) + '회'
             innerHTML += '</td>'
 
@@ -221,6 +247,10 @@ async function getStarforceData(apiKey, date) {
 
                 stat.totalObserved += 1
                 totalStat.totalObserved += 1
+
+                totalStat.addSuccessRate(stat.successRate)
+                totalStat.addFailRate(stat.failRate)
+                totalStat.addDestroyRate(stat.destroyRate)
 
                 if (history.item_upgrade_result == '성공') {
                     stat.successObserved += 1
