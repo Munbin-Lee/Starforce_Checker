@@ -50,9 +50,15 @@
     슈페리얼 아이템
     <br />
 
-    <input id="catch_on" class="input_checkbox" type="checkbox" onclick="refreshTable()"
-        title="스타캐치를 성공한 결과만을 표시합니다." />
+    <input id="catch_total" class="input_radio" type="radio" name="catch" checked="checked" onclick="refreshTable()"
+        title="스타캐치와 상관없이 전체 결과를 표시합니다." />
+    전체
+    <input id="catch_on" class="input_radio" type="radio" name="catch" onclick="refreshTable()"
+        title="스타캐치에 성공한 결과만을 표시합니다." />
     스타캐치 ON
+    <input id="catch_off" class="input_radio" type="radio" name="catch" onclick="refreshTable()"
+        title="스타캐치를 사용하지 않거나 실패한 결과만을 표시합니다." />
+    스타캐치 OFF
     <br />
     <br />
 

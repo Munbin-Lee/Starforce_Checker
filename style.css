@@ -42,15 +42,14 @@ body.dark tbody tr:hover {
     height: 50px;
 }
 
-.input_button:hover {
-    cursor: pointer;
-}
-
-.input_checkbox {
+.input_checkbox,
+.input_radio {
     margin-top: 10px;
 }
 
-.input_checkbox:hover {
+.input_button:hover,
+.input_checkbox:hover,
+.input_radio {
     cursor: pointer;
 }
 

@@ -11,6 +11,31 @@ class StarforceStat {
     }
 }
 
+class TotalStat extends StarforceStat {
+    constructor(star, successRate, destroyRate, failRate) {
+        super(star, successRate, destroyRate, failRate)
+
+        this.totalSuccessRate = 0
+        this.totalDestroyRate = 0
+        this.totalFailRate = 0
+    }
+
+    addSuccessRate(rate) {
+        this.totalSuccessRate += rate
+        this.successRate = this.totalSuccessRate / this.totalObserved
+    }
+
+    addDestroyRate(rate) {
+        this.totalDestroyRate += rate
+        this.destroyRate = this.totalDestroyRate / this.totalObserved
+    }
+
+    addFailRate(rate) {
+        this.totalFailRate += rate
+        this.failRate = this.totalFailRate / this.totalObserved
+    }
+}
+
 class StarforceResult {
     static maxStar = 25
 
@@ -22,8 +47,18 @@ class StarforceResult {
         return 0
     }
 
+    getCatchSuccessRate(star) {
+        return 0
+    }
+
+    getCatchDestroyRate(star) {
+        return 0
+    }
+
     constructor() {
         this.stats = []
+        this.catchStats = []
+        this.totalStats = []
 
         for (const star of Array(this.constructor.maxStar).keys()) {
             const successRate = this.getSuccessRate(star)
@@ -31,6 +66,15 @@ class StarforceResult {
             const failRate = 10000 - successRate - destroyRate
             const stat = new StarforceStat(star, successRate, destroyRate, failRate)
             this.stats.push(stat)
+
+            const catchSuccessRate = this.getCatchSuccessRate(star)
+            const catchDestroyRate = this.getCatchDestroyRate(star)
+            const catchfailRate = 10000 - catchSuccessRate - catchDestroyRate
+            const catchStat = new StarforceStat(star, catchSuccessRate, catchDestroyRate, catchfailRate)
+            this.catchStats.push(catchStat)
+
+            const totalStat = new TotalStat(star, successRate, destroyRate, failRate)
+            this.totalStats.push(totalStat)
         }
     }
 }
@@ -52,17 +96,15 @@ class NormalResult extends StarforceResult {
         if (star == 23) return 2940
         return 3960
     }
-}
 
-class CatchResult extends StarforceResult {
-    getSuccessRate(star) {
+    getCatchSuccessRate(star) {
         if (star <= 2) return 9975 - 525 * star
         if (star <= 13) return 10500 - 525 * star
         if (star <= 21) return 3150
         return 2625 - 105 * star
     }
 
-    getDestroyRate(star) {
+    getCatchDestroyRate(star) {
         if (star <= 14) return 0
         if (star <= 17) return 206
         if (star <= 19) return 274
@@ -92,12 +134,8 @@ class SuperiorResult extends StarforceResult {
         if (star == 11) return 1630
         return 4250 + 50 * star
     }
-}
 
-class SuperiorCatchResult extends StarforceResult {
-    static maxStar = 15
-
-    getSuccessRate(star) {
+    getCatchSuccessRate(star) {
         if (star <= 1) return 5250
         if (star == 2) return 4725
         if (star <= 8) return 4200
@@ -106,7 +144,7 @@ class SuperiorCatchResult extends StarforceResult {
         return 1575 - 105 * star
     }
 
-    getDestroyRate(star) {
+    getCatchDestroyRate(star) {
         if (star <= 4) return 0
         if (star == 5) return 174
         if (star == 6) return 290
@@ -121,7 +159,7 @@ class SuperiorCatchResult extends StarforceResult {
     }
 }
 
-const starforceResults = [new NormalResult(), new CatchResult(), new SuperiorResult(), new SuperiorCatchResult()]
+const starforceResults = [new NormalResult(), new SuperiorResult()]
 
 const starforceTbody = document.getElementById('starforce_tbody')
 
@@ -130,16 +168,16 @@ function refreshTable() {
     const hideLowStar = document.getElementById('hide_low_star').checked
     const onlyShowProb = document.getElementById('only_show_prob').checked
     const superiorOn = document.getElementById('superior_on').checked
+    const catchTotal = document.getElementById('catch_total').checked
     const catchOn = document.getElementById('catch_on').checked
+    const catchOff = document.getElementById('catch_off').checked
 
-    let stats = starforceResults[0].stats
-    if (!superiorOn && catchOn) {
-        stats = starforceResults[1].stats
-    } else if (superiorOn && !catchOn) {
-        stats = starforceResults[2].stats
-    } else if (superiorOn && catchOn) {
-        stats = starforceResults[3].stats
-    }
+    let result = starforceResults[0]
+    if (superiorOn) result = starforceResults[1]
+
+    let stats = result.totalStats
+    if (catchOn) stats = result.catchStats
+    if (catchOff) stats = result.stats
 
     let innerHTML = ''
 
@@ -155,7 +193,8 @@ function refreshTable() {
 
         for (const [rate, observed] of [[stat.successRate, stat.successObserved],
         [stat.failRate, stat.failObserved], [stat.destroyRate, stat.destroyObserved]]) {
-            innerHTML += '<td>' + (rate / 100).toFixed(2) + '%'
+            innerHTML += '<td>'
+            innerHTML += (rate / 100).toFixed(2) + '%'
             if (!onlyShowProb && stat.totalObserved != 0) innerHTML += ' , ' + (rate * stat.totalObserved / 10000).toFixed(2) + '회'
             innerHTML += '</td>'
 
@@ -198,25 +237,31 @@ async function getStarforceData(apiKey, date) {
                     && history.starforce_event_list != null
                     && (star == 5 || star == 10 || star == 15)) continue
 
-                let stat = starforceResults[0].stats[star]
+                let result = starforceResults[0]
+                if (history.superior_item_flag == '슈페리얼 장비') result = starforceResults[1]
 
-                if (history.superior_item_flag != '슈페리얼 장비' && history.starcatch_result == '성공') {
-                    stat = starforceResults[1].stats[star]
-                } else if (history.superior_item_flag == '슈페리얼 장비' && history.starcatch_result != '성공') {
-                    stat = starforceResults[2].stats[star]
-                } else if (history.superior_item_flag == '슈페리얼 장비' && history.starcatch_result == '성공') {
-                    stat = starforceResults[3].stats[star]
-                }
+                let stat = result.stats[star]
+                if (history.starcatch_result == '성공') stat = result.catchStats[star]
+
+                const totalStat = result.totalStats[star]
 
                 stat.totalObserved += 1
+                totalStat.totalObserved += 1
+
+                totalStat.addSuccessRate(stat.successRate)
+                totalStat.addFailRate(stat.failRate)
+                totalStat.addDestroyRate(stat.destroyRate)
 
                 if (history.item_upgrade_result == '성공') {
                     stat.successObserved += 1
+                    totalStat.successObserved += 1
                 } else if (history.item_upgrade_result == '실패(유지)' ||
                     history.item_upgrade_result == '실패(하락)') {
                     stat.failObserved += 1
+                    totalStat.failObserved += 1
                 } else {
                     stat.destroyObserved += 1
+                    totalStat.destroyObserved += 1
                 }
             }
         })
@@ -284,9 +329,7 @@ async function getAllStarforceData() {
     document.cookie = 'apiKey=' + apiKey + '; expires=' + expirationDate.toUTCString()
 
     starforceResults[0] = new NormalResult()
-    starforceResults[1] = new CatchResult()
-    starforceResults[2] = new SuperiorResult()
-    starforceResults[3] = new SuperiorCatchResult()
+    starforceResults[1] = new SuperiorResult()
 
     for (const date = dateBegin; date <= dateEnd; date.setDate(date.getDate() + 1)) {
         const paramDate = date.toISOString().slice(0, 10)
