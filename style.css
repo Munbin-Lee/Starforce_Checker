@@ -1,3 +1,8 @@
+* {
+    font-family: 'NanumSquare', sans-serif;
+    font-weight: 300 bold;
+}
+
 table {
     width: 70%;
     text-align: center;
