@@ -224,7 +224,8 @@ function processData(target_item = '') {
 
     for (const data of datas) {
         for (const history of Object.values(data.starforce_history)) {
-            if (target_item && history.target_item != target_item) continue
+            console.log(history)
+            if (target_item != '' && history.target_item.match(target_item) == null) continue
 
             if (history.chance_time == '찬스타임 적용') continue
 
@@ -264,6 +265,8 @@ function processData(target_item = '') {
             }
         }
     }
+
+    refreshTable()
 }
 
 async function getStarforceData(apiKey, date) {
@@ -352,9 +355,18 @@ async function getAllStarforceData() {
     }
 
     processData()
-    refreshTable()
 
     getDataButton.disabled = false
+}
+
+function resetSearchText() {
+    document.getElementById('search_text').value = ''
+    processData()
+}
+
+function search() {
+    const itemName = document.getElementById('search_text').value
+    processData(itemName)
 }
 
 function getCookieValue(name) {
