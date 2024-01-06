@@ -166,6 +166,7 @@ const starforceTbody = document.getElementById('starforce_tbody')
 function refreshTable() {
     const hideEmptyRow = document.getElementById('hide_empty_row').checked
     const hideLowStar = document.getElementById('hide_low_star').checked
+    const hideHightStar = document.getElementById('hide_high_star').checked
     const onlyShowProb = document.getElementById('only_show_prob').checked
     const superiorOn = document.getElementById('superior_on').checked
     const catchTotal = document.getElementById('catch_total').checked
@@ -185,6 +186,10 @@ function refreshTable() {
         if (hideEmptyRow && stat.totalObserved == 0) return
 
         if (hideLowStar && !superiorOn && stat.star < 15) return
+
+        if (hideHightStar && superiorOn && stat.star >= 12) return
+
+        if (hideHightStar && !superiorOn && stat.star >= 22) return
 
         innerHTML += '<tr>'
 
