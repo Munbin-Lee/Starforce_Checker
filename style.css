@@ -1,4 +1,4 @@
-* {
+body {
     font-family: 'NanumBarunGothicLight';
 }
 
@@ -24,4 +24,15 @@ td:nth-child(even) {
 tbody tr:hover {
     background-color: #ccc;
     cursor: pointer;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #000;
+        color: #fff;
+    }
+
+    tbody tr:hover {
+        background-color: #555;
+    }
 }
