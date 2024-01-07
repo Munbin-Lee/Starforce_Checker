@@ -126,7 +126,9 @@ function sleep(time) {
     return new Promise(r => setTimeout(r, time));
 }
 
-function processData(answers) {
+let answers = []
+
+function processData() {
     for (const answer of answers) {
         for (const history of answer.starforce_history) {
 
@@ -179,7 +181,8 @@ async function getData() {
     // 스택에서 하나씩 fetch
     let counts = 0;
     let failed = false;
-    const answers = [];
+    
+    answers = [];
 
     while (apiUrlStack.length) {
         const apiUrl = apiUrlStack.pop();
@@ -223,9 +226,9 @@ async function getData() {
     const getDataResult = document.getElementById(getDataResultString);
     getDataResult.innerHTML = `${counts}개의 기록을 불러왔습니다.`;
 
-    getDataButton.disabled = false;
+    processData();
 
-    processData(answers);
+    getDataButton.disabled = false;
 }
 
 function init() {
