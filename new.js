@@ -128,7 +128,9 @@ function sleep(time) {
 
 function processData(answers) {
     for (const answer of answers) {
-        console.log(answer);
+        for (const history of answer.starforce_history) {
+
+        }
     }
 }
 
@@ -219,7 +221,7 @@ async function getData() {
     }
 
     const getDataResult = document.getElementById(getDataResultString);
-    getDataResult.innerHTML = `${counts}개의 정보를 불러왔습니다.`;
+    getDataResult.innerHTML = `${counts}개의 기록을 불러왔습니다.`;
 
     getDataButton.disabled = false;
 
