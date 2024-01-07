@@ -1,8 +1,30 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    </head>
+<html lang="ko">
 
-    <body>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=1280">
+    <title>스타포스 체커</title>
+    <script src="new.js" defer></script>
+</head>
+
+<body>
+    스타포스 체커
+    <br>
+
+    <input id="api_key_text" type="text" size="110" placeholder="API Key">
+    <br>
+
+    <input id="begin_date_text" type="text" size="20" placeholder="시작일 (2023-12-27 이후)" value="2023-12-27">
+    ~
+    <input id="end_date_text" type="text" size="20" placeholder="종료일 (ex.2024-01-10)">
+    <br>
+
+    <input id="get_data_button" type="button" onclick="getData()" value="스타포스 기록 불러오기">
+    <br>
+
+    <div id="get_data_result"></div>
+    Data based on NEXON Open API
+</body>
+
 </html>
