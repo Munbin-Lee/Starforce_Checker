@@ -229,14 +229,14 @@ function processData(target_item) {
 
     for (const data of datas) {
         for (const history of Object.values(data.starforce_history)) {
-            if (target_item != '' && history.target_item.match(target_item) == null) continue
+            if (target_item && !history.target_item.match(target_item)) continue
 
             if (history.chance_time == '찬스타임 적용') continue
 
             const star = history.before_starforce_count
 
             if (history.superior_item_flag != '슈페리얼 장비'
-                && history.starforce_event_list != null
+                && history.starforce_event_list
                 && (star == 5 || star == 10 || star == 15)) continue
 
             let result = starforceResults[0]
@@ -281,7 +281,7 @@ async function getStarforceData(apiKey, date) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.next_cursor != null) {
+            if (data.next_cursor) {
                 stack.push(data.next_cursor)
             }
             datas.push(data)
@@ -302,7 +302,7 @@ async function getStarforceDataCursor(apiKey, cursor) {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.next_cursor != null) {
+            if (data.next_cursor) {
                 stack.push(data.next_cursor)
             }
             datas.push(data)
