@@ -126,14 +126,15 @@ function sleep(time) {
     return new Promise(r => setTimeout(r, time));
 }
 
-let answers = []
+let answers = [];
 
 function processData() {
-    for (const answer of answers) {
-        for (const history of answer.starforce_history) {
+    console.log('process');
+    // for (const answer of answers) {
+    //     for (const history of answer.starforce_history) {
 
-        }
-    }
+    //     }
+    // }
 }
 
 async function getData() {
@@ -181,7 +182,7 @@ async function getData() {
     // 스택에서 하나씩 fetch
     let counts = 0;
     let failed = false;
-    
+
     answers = [];
 
     while (apiUrlStack.length) {
@@ -229,6 +230,15 @@ async function getData() {
     processData();
 
     getDataButton.disabled = false;
+}
+
+function handleCheckbox(source) {
+    for (const checkbox of document.getElementsByName(source.name)) {
+        if (checkbox === source) continue;
+        checkbox.checked = source.checked;
+    }
+
+    processData();
 }
 
 function init() {
