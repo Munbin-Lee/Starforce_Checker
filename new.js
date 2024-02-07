@@ -25,6 +25,36 @@ const tooManyRequestsErrorMessage = '너무 많은 요청을 보냈습니다.\nA
 
 const apiBaseUrl = 'https://open.api.nexon.com/maplestory/v1/history/starforce?count=1000&';
 
+const normalSuccessRates = [
+    9500, 9000, 8500, 8500, 8000,
+    7500, 7000, 6500, 6000, 5500,
+    5000, 4500, 4000, 3500, 3000,
+    3000, 3000, 3000, 3000, 3000,
+    3000, 3000, 300, 200, 100
+]
+
+const normalDestroyRates = [
+    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0,
+    210, 210, 210, 280, 280,
+    700, 700, 1940, 2940, 3960
+]
+
+const superiorSuccessRates = [
+    50, 50, 45, 40, 40,
+    40, 40, 40, 40, 37,
+    35, 35, 3, 2, 1
+]
+
+const superiorDestroyRates = [
+    0, 0, 0, 0, 0,
+    180, 300, 420, 600, 950,
+    1300, 1630, 4850, 4900, 4950
+]
+
+let answers = [];
+
 function getDates() {
     const beginDateText = document.getElementById(beginDateTextString);
     const endDateText = document.getElementById(endDateTextString);
@@ -126,15 +156,83 @@ function sleep(time) {
     return new Promise(r => setTimeout(r, time));
 }
 
-let answers = [];
+function getSuccessRate(star, isNormal, isCatch, events) {
+    let successRate = isNormal ? normalSuccessRates[star] : superiorSuccessRates[star];
+
+    if (isCatch) successRate *= 1.05;
+
+    return successRate;
+}
+
+class StarforceStat {
+    constructor(star) {
+        this.star = star;
+        this.count = 0;
+        this.totalSuccessRates = 0;
+        this.totalDestroyRates = 0;
+        this.totalFailRates = 0;
+        this.successCount = 0;
+        this.destroyCount = 0;
+        this.failCount = 0;
+    }
+}
+
+class StarforceResult {
+    constructor() {
+        this.normalStats = [];
+
+        for (const star of Array(25).keys()) {
+            const stat = new StarforceStat(star);
+            this.normalStats.push(stat);
+        }
+
+        this.superiorStats = [];
+
+        for (const star of Array(15).keys()) {
+            const stat = new StarforceStat(star);
+            this.superiorStats.push(stat);
+        }
+    }
+}
+
+function refreshTable(starforceResult) {
+    for (const s of starforceResult.normalStats) {
+        console.log(s.totalSuccessRates / s.successCount);
+    }
+}
 
 function processData() {
-    console.log('process');
-    // for (const answer of answers) {
-    //     for (const history of answer.starforce_history) {
+    const starforceResult = new StarforceResult();
 
-    //     }
-    // }
+    for (const answer of answers) {
+        for (const history of answer.starforce_history) {
+            const isNormal = history.superior_item_flag !== '슈페리얼 장비';
+            const star = history.before_starforce_count;
+            const result = history.item_upgrade_result;
+            const isCatch = history.starcatch_result === '성공';
+            const events = history.starforce_event_list;
+
+            for (const event of history.starforce_event_list) {
+                
+            }
+
+            const stats = isNormal ? starforceResult.normalStats : starforceResult.superiorStats;
+            const stat = stats[star];
+            stat.count++;
+
+            if (result === '성공') {
+                stat.successCount++;
+                stat.totalSuccessRates += getSuccessRate(star, isNormal, isCatch, events);
+            } else if (result === '파괴') {
+                stat.destroyCount++;
+                // stat.totalDestroyRates += getDestroyRate(star, isNormal, isCatch, events);
+            } else {
+                stat.failCount++;
+            }
+        }
+    }
+
+    refreshTable(starforceResult);
 }
 
 async function getData() {
@@ -183,7 +281,7 @@ async function getData() {
     let counts = 0;
     let failed = false;
 
-    answers = [];
+    answers.length = 0;
 
     while (apiUrlStack.length) {
         const apiUrl = apiUrlStack.pop();
